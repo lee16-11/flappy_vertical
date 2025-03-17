@@ -7,7 +7,7 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { text-align: center; font-family: Arial, sans-serif; }
-        canvas { background: url('https://example.com/sky-background.jpg') no-repeat center center; background-size: cover; display: block; margin: auto; }
+        canvas { background: url('https://example.com/beautiful-sky.jpg') no-repeat center center; background-size: cover; display: block; margin: auto; }
     </style>
 </head>
 <body>
@@ -19,11 +19,10 @@
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
 
-        // Cập nhật kích thước canvas
-        canvas.width = 400;
-        canvas.height = 600;
+        canvas.width = 500;
+        canvas.height = 700;
 
-        let eagle = { x: 150, y: 250, width: 50, height: 50, velocity: 0, gravity: 0.3, jump: -6 };
+        let eagle = { x: 150, y: 250, width: 60, height: 60, velocity: 0, gravity: 0.3, jump: -7 };
         let pipes = [];
         let frame = 0;
         let obstaclesPassed = 0;
@@ -33,13 +32,17 @@
         
         // Tải hình ảnh chim đại bàng
         const eagleImg = new Image();
-        eagleImg.src = 'https://example.com/eagle.png'; // Thay thế bằng URL hình ảnh chim đại bàng của bạn
+        eagleImg.src = 'https://example.com/eagle-animated.gif'; // Chim đại bàng động
 
         // Tải hình ảnh các ống
         const topPipeImg = new Image();
-        topPipeImg.src = 'https://example.com/top-pipe.png'; // Thay thế bằng URL hình ảnh ống trên của bạn
+        topPipeImg.src = 'https://example.com/beautiful-top-pipe.png';
         const bottomPipeImg = new Image();
-        bottomPipeImg.src = 'https://example.com/bottom-pipe.png'; // Thay thế bằng URL hình ảnh ống dưới của bạn
+        bottomPipeImg.src = 'https://example.com/beautiful-bottom-pipe.png';
+
+        // Thêm âm thanh cho nhảy và va chạm
+        const jumpSound = new Audio('https://example.com/jump-sound.mp3');
+        const collisionSound = new Audio('https://example.com/collision-sound.mp3');
 
         document.addEventListener("keydown", jump);
         document.addEventListener("click", jump);
@@ -47,6 +50,7 @@
         function jump() {
             if (!isGameOver) {
                 eagle.velocity = eagle.jump;
+                jumpSound.play();  // Chơi âm thanh khi nhảy
             } else {
                 resetGame();
             }
@@ -64,7 +68,7 @@
             // Tạo ống mỗi 90 frame
             if (frame % 90 === 0) {
                 let gapY = Math.random() * (canvas.height - 150) + 50;
-                pipes.push({ x: 400, y: gapY, width: 40, height: 100 });
+                pipes.push({ x: canvas.width, y: gapY, width: 50, height: 120 });
             }
 
             // Di chuyển các ống và kiểm tra va chạm
@@ -76,7 +80,7 @@
                     
                     if (obstaclesPassed % 10 === 0) {
                         teammates++;
-                        rescuedTeammates.push({ x: eagle.x - 30 * rescuedTeammates.length, y: eagle.y });
+                        rescuedTeammates.push({ x: eagle.x - 40 * rescuedTeammates.length, y: eagle.y });
                     }
                 }
                 if (collision(eagle, pipe)) gameOver();
@@ -99,6 +103,7 @@
         }
 
         function gameOver() {
+            collisionSound.play(); // Chơi âm thanh khi va chạm
             isGameOver = true;
             alert("Game Over! Bạn đã cứu được: " + teammates + " đồng đội.");
         }
@@ -136,7 +141,8 @@
 
             // Vẽ điểm số và số lượng đồng đội đã cứu
             ctx.fillStyle = "black";
-            ctx.fillText("Đồng đội đã cứu: " + teammates, 10, 20);
+            ctx.font = "20px Arial";
+            ctx.fillText("Đồng đội đã cứu: " + teammates, 10, 30);
         }
 
         function gameLoop() {
