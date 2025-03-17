@@ -7,7 +7,7 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { text-align: center; font-family: Arial, sans-serif; }
-        canvas { background: url('https://example.com/beautiful-sky.jpg') no-repeat center center; background-size: cover; display: block; margin: auto; }
+        canvas { background: url('https://www.w3schools.com/w3images/forest.jpg') no-repeat center center; background-size: cover; display: block; margin: auto; }
     </style>
 </head>
 <body>
@@ -32,17 +32,17 @@
         
         // Tải hình ảnh chim đại bàng
         const eagleImg = new Image();
-        eagleImg.src = 'https://example.com/eagle-animated.gif'; // Chim đại bàng động
+        eagleImg.src = 'https://media.giphy.com/media/6tFCdflwhslYHkbrvY/giphy.gif'; // Chim đại bàng động
 
         // Tải hình ảnh các ống
         const topPipeImg = new Image();
-        topPipeImg.src = 'https://example.com/beautiful-top-pipe.png';
+        topPipeImg.src = 'https://upload.wikimedia.org/wikipedia/commons/a/a7/Pipe_Green_2017.svg'; // Ống trên
         const bottomPipeImg = new Image();
-        bottomPipeImg.src = 'https://example.com/beautiful-bottom-pipe.png';
+        bottomPipeImg.src = 'https://upload.wikimedia.org/wikipedia/commons/5/58/Pipe_Green_2017_%28bottom%29.svg'; // Ống dưới
 
         // Thêm âm thanh cho nhảy và va chạm
-        const jumpSound = new Audio('https://example.com/jump-sound.mp3');
-        const collisionSound = new Audio('https://example.com/collision-sound.mp3');
+        const jumpSound = new Audio('https://www.soundjay.com/button/beep-07.wav'); // Âm thanh nhảy
+        const collisionSound = new Audio('https://www.soundjay.com/button/beep-03.wav'); // Âm thanh va chạm
 
         document.addEventListener("keydown", jump);
         document.addEventListener("click", jump);
@@ -155,18 +155,3 @@
     </script>
 </body>
 </html>
-<!-- Thay các URL sau bằng các đường dẫn thực tế của bạn -->
-<canvas id="gameCanvas"></canvas>
-
-<script>
-    const eagleImg = new Image();
-    eagleImg.src = 'https://www.example.com/your-eagle.gif';  // Hình ảnh chim đại bàng động
-    const topPipeImg = new Image();
-    topPipeImg.src = 'https://www.example.com/top-pipe.png';  // Hình ảnh ống trên
-    const bottomPipeImg = new Image();
-    bottomPipeImg.src = 'https://www.example.com/bottom-pipe.png';  // Hình ảnh ống dưới
-
-    // Âm thanh
-    const jumpSound = new Audio('https://www.example.com/jump.mp3');
-    const collisionSound = new Audio('https://www.example.com/collision.mp3');
-</script>
