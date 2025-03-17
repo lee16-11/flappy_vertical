@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird Dọc - Giải Cứu Đồng Đội</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { text-align: center; font-family: Arial, sans-serif; }
+        canvas { background: skyblue; display: block; margin: auto; }
+    </style>
+</head>
+<body>
+    <h2>Flappy Bird Dọc - Giải Cứu Đồng Đội</h2>
+    <p>Nhấn SPACE hoặc Click để nhảy!</p>
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        canvas.width = 300;
+        canvas.height = 500;
+
+        let bird = { x: 150, y: 250, size: 20, velocity: 0, gravity: 0.5, jump: -8 };
+        let pipes = [];
+        let frame = 0;
+        let obstaclesPassed = 0;
+        let teammates = 0;
+        let rescuedTeammates = [];
+        let isGameOver = false;
+
+        document.addEventListener("keydown", jump);
+        document.addEventListener("click", jump);
+
+        function jump() {
+            if (!isGameOver) {
+                bird.velocity = bird.jump;
+            } else {
+                resetGame();
+            }
+        }
+
+        function update() {
+            if (isGameOver) return;
+
+            bird.velocity += bird.gravity;
+            bird.y += bird.velocity;
+
+            if (bird.y >= canvas.height) gameOver();
+
+            if (frame % 90 === 0) {
+                let gapY = Math.random() * (canvas.height - 150) + 50;
+                pipes.push({ x: 280, y: gapY, width: 40, height: 100 });
+            }
+
+            pipes.forEach((pipe, index) => {
+                pipe.x -= 3;
+                if (pipe.x + pipe.width < 0) {
+                    pipes.splice(index, 1);
+                    obstaclesPassed++;
+                    
+                    if (obstaclesPassed % 10 === 0) {
+                        teammates++;
+                        rescuedTeammates.push({ x: bird.x - 30 * rescuedTeammates.length, y: bird.y });
+                    }
+                }
+                if (collision(bird, pipe)) gameOver();
+            });
+
+            rescuedTeammates.forEach(mate => {
+                mate.y = bird.y;
+            });
+
+            frame++;
+        }
+
+        function collision(bird, pipe) {
+            return (
+                bird.x < pipe.x + pipe.width &&
+                bird.x + bird.size > pipe.x &&
+                (bird.y < pipe.y || bird.y + bird.size > pipe.y + pipe.height)
+            );
+        }
+
+        function gameOver() {
+            isGameOver = true;
+            alert("Game Over! Bạn đã cứu được: " + teammates + " đồng đội.");
+        }
+
+        function resetGame() {
+            bird.y = 250;
+            bird.velocity = 0;
+            pipes = [];
+            obstaclesPassed = 0;
+            teammates = 0;
+            rescuedTeammates = [];
+            frame = 0;
+            isGameOver = false;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = "yellow";
+            ctx.fillRect(bird.x, bird.y, bird.size, bird.size);
+
+            ctx.fillStyle = "green";
+            pipes.forEach(pipe => {
+                ctx.fillRect(pipe.x, 0, pipe.width, pipe.y);
+                ctx.fillRect(pipe.x, pipe.y + pipe.height, pipe.width, canvas.height - pipe.y - pipe.height);
+            });
+
+            ctx.fillStyle = "blue";
+            rescuedTeammates.forEach(mate => {
+                ctx.fillRect(mate.x, mate.y, bird.size, bird.size);
+            });
+
+            ctx.fillStyle = "black";
+            ctx.fillText("Đồng đội đã cứu: " + teammates, 10, 20);
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();
+    </script>
+</body>
+</html>
