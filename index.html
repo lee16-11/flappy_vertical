@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flappy Bird Dọc - Giải Cứu Đồng Đội</title>
+    <title>Flappy Eagle - Giải Cứu Đồng Đội</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { text-align: center; font-family: Arial, sans-serif; }
-        canvas { background: skyblue; display: block; margin: auto; }
+        canvas { background: url('https://example.com/sky-background.jpg') no-repeat center center; background-size: cover; display: block; margin: auto; }
     </style>
 </head>
 <body>
-    <h2>Flappy Bird Dọc - Giải Cứu Đồng Đội</h2>
+    <h2>Flappy Eagle - Giải Cứu Đồng Đội</h2>
     <p>Nhấn SPACE hoặc Click để nhảy!</p>
     <canvas id="gameCanvas"></canvas>
 
@@ -19,23 +19,34 @@
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
 
-        canvas.width = 300;
-        canvas.height = 500;
+        // Cập nhật kích thước canvas
+        canvas.width = 400;
+        canvas.height = 600;
 
-        let bird = { x: 150, y: 250, size: 20, velocity: 0, gravity: 0.3, jump: -6 };
+        let eagle = { x: 150, y: 250, width: 50, height: 50, velocity: 0, gravity: 0.3, jump: -6 };
         let pipes = [];
         let frame = 0;
         let obstaclesPassed = 0;
         let teammates = 0;
         let rescuedTeammates = [];
         let isGameOver = false;
+        
+        // Tải hình ảnh chim đại bàng
+        const eagleImg = new Image();
+        eagleImg.src = 'https://example.com/eagle.png'; // Thay thế bằng URL hình ảnh chim đại bàng của bạn
+
+        // Tải hình ảnh các ống
+        const topPipeImg = new Image();
+        topPipeImg.src = 'https://example.com/top-pipe.png'; // Thay thế bằng URL hình ảnh ống trên của bạn
+        const bottomPipeImg = new Image();
+        bottomPipeImg.src = 'https://example.com/bottom-pipe.png'; // Thay thế bằng URL hình ảnh ống dưới của bạn
 
         document.addEventListener("keydown", jump);
         document.addEventListener("click", jump);
 
         function jump() {
             if (!isGameOver) {
-                bird.velocity = bird.jump;
+                eagle.velocity = eagle.jump;
             } else {
                 resetGame();
             }
@@ -44,46 +55,46 @@
         function update() {
             if (isGameOver) return;
 
-            bird.velocity += bird.gravity;
-            bird.y += bird.velocity;
+            eagle.velocity += eagle.gravity;
+            eagle.y += eagle.velocity;
 
-            // Game Over condition if bird hits bottom
-            if (bird.y >= canvas.height) gameOver();
+            // Điều kiện game over nếu chim va phải đáy
+            if (eagle.y >= canvas.height) gameOver();
 
-            // Generate pipes every 90 frames
+            // Tạo ống mỗi 90 frame
             if (frame % 90 === 0) {
                 let gapY = Math.random() * (canvas.height - 150) + 50;
-                pipes.push({ x: 280, y: gapY, width: 40, height: 100 });
+                pipes.push({ x: 400, y: gapY, width: 40, height: 100 });
             }
 
-            // Move pipes and check for collision
+            // Di chuyển các ống và kiểm tra va chạm
             pipes.forEach((pipe, index) => {
-                pipe.x -= 2; // Slow down pipe speed for easier control
+                pipe.x -= 2; // Làm chậm tốc độ của ống để dễ kiểm soát
                 if (pipe.x + pipe.width < 0) {
                     pipes.splice(index, 1);
                     obstaclesPassed++;
                     
                     if (obstaclesPassed % 10 === 0) {
                         teammates++;
-                        rescuedTeammates.push({ x: bird.x - 30 * rescuedTeammates.length, y: bird.y });
+                        rescuedTeammates.push({ x: eagle.x - 30 * rescuedTeammates.length, y: eagle.y });
                     }
                 }
-                if (collision(bird, pipe)) gameOver();
+                if (collision(eagle, pipe)) gameOver();
             });
 
-            // Keep rescued teammates in the same vertical position as the bird
+            // Giữ cho các đồng đội đã cứu ở cùng vị trí theo chiều dọc với chim
             rescuedTeammates.forEach(mate => {
-                mate.y = bird.y;
+                mate.y = eagle.y;
             });
 
             frame++;
         }
 
-        function collision(bird, pipe) {
+        function collision(eagle, pipe) {
             return (
-                bird.x < pipe.x + pipe.width &&
-                bird.x + bird.size > pipe.x &&
-                (bird.y < pipe.y || bird.y + bird.size > pipe.y + pipe.height)
+                eagle.x < pipe.x + pipe.width &&
+                eagle.x + eagle.width > pipe.x &&
+                (eagle.y < pipe.y || eagle.y + eagle.height > pipe.y + pipe.height)
             );
         }
 
@@ -93,8 +104,8 @@
         }
 
         function resetGame() {
-            bird.y = 250;
-            bird.velocity = 0;
+            eagle.y = 250;
+            eagle.velocity = 0;
             pipes = [];
             obstaclesPassed = 0;
             teammates = 0;
@@ -105,25 +116,25 @@
 
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Draw bird
-            ctx.fillStyle = "yellow";
-            ctx.fillRect(bird.x, bird.y, bird.size, bird.size);
 
-            // Draw pipes
-            ctx.fillStyle = "green";
+            // Vẽ chim đại bàng
+            ctx.drawImage(eagleImg, eagle.x, eagle.y, eagle.width, eagle.height);
+
+            // Vẽ các ống
             pipes.forEach(pipe => {
-                ctx.fillRect(pipe.x, 0, pipe.width, pipe.y);
-                ctx.fillRect(pipe.x, pipe.y + pipe.height, pipe.width, canvas.height - pipe.y - pipe.height);
+                // Ống trên
+                ctx.drawImage(topPipeImg, pipe.x, 0, pipe.width, pipe.y);
+                // Ống dưới
+                ctx.drawImage(bottomPipeImg, pipe.x, pipe.y + pipe.height, pipe.width, canvas.height - pipe.y - pipe.height);
             });
 
-            // Draw rescued teammates
+            // Vẽ các đồng đội đã cứu
             ctx.fillStyle = "blue";
             rescuedTeammates.forEach(mate => {
-                ctx.fillRect(mate.x, mate.y, bird.size, bird.size);
+                ctx.fillRect(mate.x, mate.y, eagle.width, eagle.height);
             });
 
-            // Draw score and number of rescued teammates
+            // Vẽ điểm số và số lượng đồng đội đã cứu
             ctx.fillStyle = "black";
             ctx.fillText("Đồng đội đã cứu: " + teammates, 10, 20);
         }
