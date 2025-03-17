@@ -29,6 +29,8 @@
         let teammates = 0;
         let rescuedTeammates = [];
         let isGameOver = false;
+        let pipeSpeed = 2;
+        let jumpSound = new Audio('jump-sound.mp3'); // Âm thanh nhảy
 
         document.addEventListener("keydown", jump);
         document.addEventListener("click", jump);
@@ -36,6 +38,7 @@
         function jump() {
             if (!isGameOver) {
                 bird.velocity = bird.jump;
+                jumpSound.play();
             } else {
                 resetGame();
             }
@@ -58,7 +61,7 @@
 
             // Move pipes and check for collision
             pipes.forEach((pipe, index) => {
-                pipe.x -= 2; // Slow down pipe speed for easier control
+                pipe.x -= pipeSpeed;
                 if (pipe.x + pipe.width < 0) {
                     pipes.splice(index, 1);
                     obstaclesPassed++;
@@ -77,6 +80,11 @@
             });
 
             frame++;
+
+            // Increase difficulty over time
+            if (frame % 300 === 0) {
+                pipeSpeed += 0.1;  // Tăng tốc độ ống theo thời gian
+            }
         }
 
         function collision(bird, pipe) {
@@ -101,31 +109,53 @@
             rescuedTeammates = [];
             frame = 0;
             isGameOver = false;
+            pipeSpeed = 2; // Reset tốc độ ống
         }
 
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Draw bird
-            ctx.fillStyle = "yellow";
-            ctx.fillRect(bird.x, bird.y, bird.size, bird.size);
 
-            // Draw pipes
+            // Vẽ mây nền
+            drawClouds();
+
+            // Vẽ nhân vật (Ngôi sao)
+            ctx.beginPath();
+            ctx.moveTo(bird.x + bird.size / 2, bird.y); // Điểm đầu tiên của ngôi sao
+            for (let i = 1; i <= 5; i++) {
+                const angle = i * (Math.PI * 2) / 5;
+                const x = bird.x + bird.size / 2 + Math.cos(angle) * bird.size / 2;
+                const y = bird.y + bird.size / 2 + Math.sin(angle) * bird.size / 2;
+                ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.fillStyle = "yellow";
+            ctx.fill();
+
+            // Vẽ các ống
             ctx.fillStyle = "green";
             pipes.forEach(pipe => {
                 ctx.fillRect(pipe.x, 0, pipe.width, pipe.y);
                 ctx.fillRect(pipe.x, pipe.y + pipe.height, pipe.width, canvas.height - pipe.y - pipe.height);
             });
 
-            // Draw rescued teammates
+            // Vẽ các đồng đội đã cứu
             ctx.fillStyle = "blue";
             rescuedTeammates.forEach(mate => {
                 ctx.fillRect(mate.x, mate.y, bird.size, bird.size);
             });
 
-            // Draw score and number of rescued teammates
+            // Vẽ điểm số và số đồng đội đã cứu
             ctx.fillStyle = "black";
             ctx.fillText("Đồng đội đã cứu: " + teammates, 10, 20);
+        }
+
+        function drawClouds() {
+            ctx.fillStyle = "white";
+            ctx.beginPath();
+            ctx.arc(50, 50, 30, 0, Math.PI * 2); // Vẽ đám mây
+            ctx.arc(80, 50, 30, 0, Math.PI * 2);
+            ctx.arc(60, 40, 30, 0, Math.PI * 2);
+            ctx.fill();
         }
 
         function gameLoop() {
