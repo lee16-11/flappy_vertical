@@ -22,7 +22,7 @@
         canvas.width = 300;
         canvas.height = 500;
 
-        let bird = { x: 150, y: 250, size: 20, velocity: 0, gravity: 0.5, jump: -8 };
+        let bird = { x: 150, y: 250, size: 20, velocity: 0, gravity: 0.3, jump: -6 };
         let pipes = [];
         let frame = 0;
         let obstaclesPassed = 0;
@@ -47,15 +47,18 @@
             bird.velocity += bird.gravity;
             bird.y += bird.velocity;
 
+            // Game Over condition if bird hits bottom
             if (bird.y >= canvas.height) gameOver();
 
+            // Generate pipes every 90 frames
             if (frame % 90 === 0) {
                 let gapY = Math.random() * (canvas.height - 150) + 50;
                 pipes.push({ x: 280, y: gapY, width: 40, height: 100 });
             }
 
+            // Move pipes and check for collision
             pipes.forEach((pipe, index) => {
-                pipe.x -= 3;
+                pipe.x -= 2; // Slow down pipe speed for easier control
                 if (pipe.x + pipe.width < 0) {
                     pipes.splice(index, 1);
                     obstaclesPassed++;
@@ -68,6 +71,7 @@
                 if (collision(bird, pipe)) gameOver();
             });
 
+            // Keep rescued teammates in the same vertical position as the bird
             rescuedTeammates.forEach(mate => {
                 mate.y = bird.y;
             });
@@ -102,20 +106,24 @@
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
+            // Draw bird
             ctx.fillStyle = "yellow";
             ctx.fillRect(bird.x, bird.y, bird.size, bird.size);
 
+            // Draw pipes
             ctx.fillStyle = "green";
             pipes.forEach(pipe => {
                 ctx.fillRect(pipe.x, 0, pipe.width, pipe.y);
                 ctx.fillRect(pipe.x, pipe.y + pipe.height, pipe.width, canvas.height - pipe.y - pipe.height);
             });
 
+            // Draw rescued teammates
             ctx.fillStyle = "blue";
             rescuedTeammates.forEach(mate => {
                 ctx.fillRect(mate.x, mate.y, bird.size, bird.size);
             });
 
+            // Draw score and number of rescued teammates
             ctx.fillStyle = "black";
             ctx.fillText("Đồng đội đã cứu: " + teammates, 10, 20);
         }
