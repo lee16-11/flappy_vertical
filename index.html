@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flappy Eagle - Giải Cứu Đồng Đội</title>
+    <title>Flappy Star - Giải Cứu Đồng Đội</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { text-align: center; font-family: Arial, sans-serif; }
-        canvas { background: url('https://www.w3schools.com/w3images/forest.jpg') no-repeat center center; background-size: cover; display: block; margin: auto; }
+        canvas { display: block; margin: auto; background-color: #87CEEB; }
     </style>
 </head>
 <body>
-    <h2>Flappy Eagle - Giải Cứu Đồng Đội</h2>
+    <h2>Flappy Star - Giải Cứu Đồng Đội</h2>
     <p>Nhấn SPACE hoặc Click để nhảy!</p>
     <canvas id="gameCanvas"></canvas>
 
@@ -22,7 +22,7 @@
         canvas.width = 500;
         canvas.height = 700;
 
-        let eagle = { x: 150, y: 250, width: 60, height: 60, velocity: 0, gravity: 0.3, jump: -7 };
+        let star = { x: 150, y: 250, width: 50, height: 50, velocity: 0, gravity: 0.3, jump: -7 };
         let pipes = [];
         let frame = 0;
         let obstaclesPassed = 0;
@@ -30,9 +30,20 @@
         let rescuedTeammates = [];
         let isGameOver = false;
         
-        // Tải hình ảnh chim đại bàng
-        const eagleImg = new Image();
-        eagleImg.src = 'https://media.giphy.com/media/6tFCdflwhslYHkbrvY/giphy.gif'; // Chim đại bàng động
+        // Tạo một hình ngôi sao đơn giản cho nhân vật
+        function drawStar(x, y, size) {
+            ctx.beginPath();
+            ctx.moveTo(x, y - size);
+            for (let i = 0; i < 5; i++) {
+                ctx.lineTo(x + size * Math.cos((18 + i * 72) * Math.PI / 180),
+                           y - size * Math.sin((18 + i * 72) * Math.PI / 180));
+                ctx.lineTo(x + size / 2 * Math.cos((54 + i * 72) * Math.PI / 180),
+                           y - size / 2 * Math.sin((54 + i * 72) * Math.PI / 180));
+            }
+            ctx.closePath();
+            ctx.fillStyle = "yellow";
+            ctx.fill();
+        }
 
         // Tải hình ảnh các ống
         const topPipeImg = new Image();
@@ -49,7 +60,7 @@
 
         function jump() {
             if (!isGameOver) {
-                eagle.velocity = eagle.jump;
+                star.velocity = star.jump;
                 jumpSound.play();  // Chơi âm thanh khi nhảy
             } else {
                 resetGame();
@@ -59,11 +70,11 @@
         function update() {
             if (isGameOver) return;
 
-            eagle.velocity += eagle.gravity;
-            eagle.y += eagle.velocity;
+            star.velocity += star.gravity;
+            star.y += star.velocity;
 
-            // Điều kiện game over nếu chim va phải đáy
-            if (eagle.y >= canvas.height) gameOver();
+            // Điều kiện game over nếu sao va phải đáy
+            if (star.y >= canvas.height) gameOver();
 
             // Tạo ống mỗi 90 frame
             if (frame % 90 === 0) {
@@ -80,25 +91,25 @@
                     
                     if (obstaclesPassed % 10 === 0) {
                         teammates++;
-                        rescuedTeammates.push({ x: eagle.x - 40 * rescuedTeammates.length, y: eagle.y });
+                        rescuedTeammates.push({ x: star.x - 40 * rescuedTeammates.length, y: star.y });
                     }
                 }
-                if (collision(eagle, pipe)) gameOver();
+                if (collision(star, pipe)) gameOver();
             });
 
-            // Giữ cho các đồng đội đã cứu ở cùng vị trí theo chiều dọc với chim
+            // Giữ cho các đồng đội đã cứu ở cùng vị trí theo chiều dọc với sao
             rescuedTeammates.forEach(mate => {
-                mate.y = eagle.y;
+                mate.y = star.y;
             });
 
             frame++;
         }
 
-        function collision(eagle, pipe) {
+        function collision(star, pipe) {
             return (
-                eagle.x < pipe.x + pipe.width &&
-                eagle.x + eagle.width > pipe.x &&
-                (eagle.y < pipe.y || eagle.y + eagle.height > pipe.y + pipe.height)
+                star.x < pipe.x + pipe.width &&
+                star.x + star.width > pipe.x &&
+                (star.y < pipe.y || star.y + star.height > pipe.y + pipe.height)
             );
         }
 
@@ -109,8 +120,8 @@
         }
 
         function resetGame() {
-            eagle.y = 250;
-            eagle.velocity = 0;
+            star.y = 250;
+            star.velocity = 0;
             pipes = [];
             obstaclesPassed = 0;
             teammates = 0;
@@ -122,8 +133,8 @@
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Vẽ chim đại bàng
-            ctx.drawImage(eagleImg, eagle.x, eagle.y, eagle.width, eagle.height);
+            // Vẽ ngôi sao
+            drawStar(star.x, star.y, star.width / 2);
 
             // Vẽ các ống
             pipes.forEach(pipe => {
@@ -136,7 +147,7 @@
             // Vẽ các đồng đội đã cứu
             ctx.fillStyle = "blue";
             rescuedTeammates.forEach(mate => {
-                ctx.fillRect(mate.x, mate.y, eagle.width, eagle.height);
+                ctx.fillRect(mate.x, mate.y, star.width, star.height);
             });
 
             // Vẽ điểm số và số lượng đồng đội đã cứu
