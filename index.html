@@ -15,7 +15,7 @@
 <body>
     <h2>Flappy Bird Dọc - Giải Cứu Đồng Đội</h2>
     <p>Nhấn SPACE hoặc Click để nhảy!</p>
-    <button id="startButton" style="display:none;" onclick="resetGame()">Bắt đầu lại</button>
+    <button id="startButton" onclick="startGame()">Bắt đầu</button>
     <canvas id="gameCanvas"></canvas>
 
     <script>
@@ -44,6 +44,12 @@
             }
         }
 
+        function startGame() {
+            document.getElementById("startButton").style.display = "none"; // Ẩn nút start khi bắt đầu game
+            resetGame();
+            gameLoop();
+        }
+
         function update() {
             if (isGameOver) return;
 
@@ -56,7 +62,7 @@
             // Generate pipes every 180 frames (gấp đôi khoảng cách)
             if (frame % 180 === 0) {  // Đã thay đổi từ 90 thành 180
                 let gapY = Math.random() * (canvas.height - 200) + 100; // Kéo giãn khoảng cách giữa các ống
-                pipes.push({ x: 280, y: gapY, width: 40, height: 100 });
+                pipes.push({ x: 280, y: gapY, width: 40, height: 100, direction: Math.random() > 0.5 ? 1 : -1 }); // Thêm direction để ống di chuyển lên/xuống
             }
 
             // Move pipes and check for collision
@@ -71,6 +77,9 @@
                         rescuedTeammates.push({ x: bird.x - 30 * rescuedTeammates.length, y: bird.y });
                     }
                 }
+                // Di chuyển ống lên/xuống
+                pipe.y += pipe.direction * 2; // Thay đổi tốc độ di chuyển của ống
+
                 if (collision(bird, pipe)) gameOver();
             });
 
@@ -105,7 +114,6 @@
             rescuedTeammates = [];
             frame = 0;
             isGameOver = false;
-            document.getElementById("startButton").style.display = "none"; // Ẩn nút bắt đầu lại
         }
 
         function draw() {
@@ -118,8 +126,8 @@
             // Draw pipes
             ctx.fillStyle = "green";
             pipes.forEach(pipe => {
-                ctx.fillRect(pipe.x, 0, pipe.width, pipe.y);
-                ctx.fillRect(pipe.x, pipe.y + pipe.height, pipe.width, canvas.height - pipe.y - pipe.height);
+                ctx.fillRect(pipe.x, 0, pipe.width, pipe.y); // Ống phía trên đã bị bỏ
+                ctx.fillRect(pipe.x, pipe.y + pipe.height, pipe.width, canvas.height - pipe.y - pipe.height); // Ống phía dưới
             });
 
             // Draw rescued teammates
@@ -138,8 +146,6 @@
             draw();
             requestAnimationFrame(gameLoop);
         }
-
-        gameLoop();
     </script>
 </body>
 </html>
