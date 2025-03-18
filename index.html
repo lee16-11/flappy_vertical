@@ -8,11 +8,14 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { text-align: center; font-family: Arial, sans-serif; }
         canvas { background: skyblue; display: block; margin: auto; }
+        #startButton { padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; font-size: 16px; }
+        #startButton:hover { background-color: #45a049; }
     </style>
 </head>
 <body>
     <h2>Flappy Bird Dọc - Giải Cứu Đồng Đội</h2>
     <p>Nhấn SPACE hoặc Click để nhảy!</p>
+    <button id="startButton" style="display:none;" onclick="resetGame()">Bắt đầu lại</button>
     <canvas id="gameCanvas"></canvas>
 
     <script>
@@ -22,7 +25,7 @@
         canvas.width = 300;
         canvas.height = 500;
 
-        let bird = { x: 150, y: 250, size: 20, velocity: 0, gravity: 0.3, jump: -6 };
+        let bird = { x: 150, y: 250, size: 20, velocity: 0, gravity: 0.1, jump: -6 }; // Trọng lực đã giảm
         let pipes = [];
         let frame = 0;
         let obstaclesPassed = 0;
@@ -52,7 +55,7 @@
 
             // Generate pipes every 90 frames
             if (frame % 90 === 0) {
-                let gapY = Math.random() * (canvas.height - 150) + 50;
+                let gapY = Math.random() * (canvas.height - 200) + 100; // Kéo giãn khoảng cách giữa các ống
                 pipes.push({ x: 280, y: gapY, width: 40, height: 100 });
             }
 
@@ -62,7 +65,7 @@
                 if (pipe.x + pipe.width < 0) {
                     pipes.splice(index, 1);
                     obstaclesPassed++;
-                    
+
                     if (obstaclesPassed % 10 === 0) {
                         teammates++;
                         rescuedTeammates.push({ x: bird.x - 30 * rescuedTeammates.length, y: bird.y });
@@ -89,6 +92,7 @@
 
         function gameOver() {
             isGameOver = true;
+            document.getElementById("startButton").style.display = "inline"; // Hiện nút bắt đầu lại
             alert("Game Over! Bạn đã cứu được: " + teammates + " đồng đội.");
         }
 
@@ -101,11 +105,12 @@
             rescuedTeammates = [];
             frame = 0;
             isGameOver = false;
+            document.getElementById("startButton").style.display = "none"; // Ẩn nút bắt đầu lại
         }
 
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
+
             // Draw bird
             ctx.fillStyle = "yellow";
             ctx.fillRect(bird.x, bird.y, bird.size, bird.size);
