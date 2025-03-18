@@ -19,10 +19,10 @@
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
 
-        canvas.width = 500;
+        canvas.width = 300;
         canvas.height = 500;
 
-        let bird = { x: 250, y: 450, size: 20, velocity: 0, gravity: 0.3, jump: -6 };
+        let bird = { x: 150, y: 250, size: 20, velocity: 0, gravity: 0.3, jump: -6 };
         let pipes = [];
         let frame = 0;
         let obstaclesPassed = 0;
@@ -47,33 +47,31 @@
             bird.velocity += bird.gravity;
             bird.y += bird.velocity;
 
-            // Game Over condition if bird hits top or bottom
-            if (bird.y >= canvas.height || bird.y <= 0) gameOver();
+            // Game Over condition if bird hits bottom
+            if (bird.y >= canvas.height) gameOver();
 
             // Generate pipes every 90 frames
             if (frame % 90 === 0) {
                 let gapY = Math.random() * (canvas.height - 150) + 50;
-                pipes.push({ x: Math.random() * (canvas.width - 40), y: gapY, width: 40, height: 100 });
+                pipes.push({ x: 280, y: gapY, width: 40, height: 100 });
             }
 
             // Move pipes and check for collision
             pipes.forEach((pipe, index) => {
-                pipe.y += 2; // Slow down pipe speed for easier control
-                if (pipe.y + pipe.height > canvas.height) {
+                pipe.x -= 2; // Slow down pipe speed for easier control
+                if (pipe.x + pipe.width < 0) {
                     pipes.splice(index, 1);
                     obstaclesPassed++;
-
-                    if (obstaclesPassed % 5 === 0) {
+                    
+                    if (obstaclesPassed % 10 === 0) {
                         teammates++;
                         rescuedTeammates.push({ x: bird.x - 30 * rescuedTeammates.length, y: bird.y });
-                        if (pipe.y < canvas.height - 50) pipe.y += 30;  // Increase pipe speed or gap size after saving teammate
                     }
                 }
-
                 if (collision(bird, pipe)) gameOver();
             });
 
-            // Keep rescued teammates in the same horizontal position as the bird
+            // Keep rescued teammates in the same vertical position as the bird
             rescuedTeammates.forEach(mate => {
                 mate.y = bird.y;
             });
@@ -95,7 +93,7 @@
         }
 
         function resetGame() {
-            bird.y = 450;
+            bird.y = 250;
             bird.velocity = 0;
             pipes = [];
             obstaclesPassed = 0;
@@ -115,7 +113,7 @@
             // Draw pipes
             ctx.fillStyle = "green";
             pipes.forEach(pipe => {
-                ctx.fillRect(pipe.x, pipe.y, pipe.width, pipe.height);
+                ctx.fillRect(pipe.x, 0, pipe.width, pipe.y);
                 ctx.fillRect(pipe.x, pipe.y + pipe.height, pipe.width, canvas.height - pipe.y - pipe.height);
             });
 
@@ -140,4 +138,3 @@
     </script>
 </body>
 </html>
-
