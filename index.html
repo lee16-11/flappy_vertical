@@ -25,7 +25,7 @@
         canvas.width = 300;
         canvas.height = 500;
 
-        let bird = { x: 150, y: 250, size: 20, velocity: 0, gravity: 0.1, jump: -6 }; // Trọng lực đã giảm
+        let bird = { x: 150, y: 250, size: 20, velocity: 0, gravity: 0.1, jump: -6 };
         let pipes = [];
         let frame = 0;
         let obstaclesPassed = 0;
@@ -59,15 +59,15 @@
             // Game Over condition if bird hits bottom
             if (bird.y >= canvas.height) gameOver();
 
-            // Generate pipes every 180 frames (gấp đôi khoảng cách)
-            if (frame % 180 === 0) {  // Đã thay đổi từ 90 thành 180
-                let gapY = Math.random() * (canvas.height - 200) + 100; // Kéo giãn khoảng cách giữa các ống
-                pipes.push({ x: 280, y: gapY, width: 40, height: 100, direction: Math.random() > 0.5 ? 1 : -1 }); // Thêm direction để ống di chuyển lên/xuống
+            // Generate pipes every 180 frames
+            if (frame % 180 === 0) { 
+                let gapY = Math.random() * (canvas.height - 200) + 100; 
+                pipes.push({ x: 280, y: gapY, width: 40, height: 100, direction: Math.random() > 0.5 ? 1 : -1 });
             }
 
             // Move pipes and check for collision
             pipes.forEach((pipe, index) => {
-                pipe.x -= 2; // Slow down pipe speed for easier control
+                pipe.x -= 2; 
                 if (pipe.x + pipe.width < 0) {
                     pipes.splice(index, 1);
                     obstaclesPassed++;
@@ -77,8 +77,7 @@
                         rescuedTeammates.push({ x: bird.x - 30 * rescuedTeammates.length, y: bird.y });
                     }
                 }
-                // Di chuyển ống lên/xuống
-                pipe.y += pipe.direction * 2; // Thay đổi tốc độ di chuyển của ống
+                pipe.y += pipe.direction * 2; 
 
                 if (collision(bird, pipe)) gameOver();
             });
@@ -126,7 +125,6 @@
             // Draw pipes
             ctx.fillStyle = "green";
             pipes.forEach(pipe => {
-                ctx.fillRect(pipe.x, 0, pipe.width, pipe.y); // Ống phía trên đã bị bỏ
                 ctx.fillRect(pipe.x, pipe.y + pipe.height, pipe.width, canvas.height - pipe.y - pipe.height); // Ống phía dưới
             });
 
@@ -136,9 +134,12 @@
                 ctx.fillRect(mate.x, mate.y, bird.size, bird.size);
             });
 
-            // Draw score and number of rescued teammates
+            // Draw score (number of pipes passed)
             ctx.fillStyle = "black";
-            ctx.fillText("Đồng đội đã cứu: " + teammates, 10, 20);
+            ctx.fillText("Ống đã vượt qua: " + obstaclesPassed, 10, 20);
+
+            // Draw number of rescued teammates
+            ctx.fillText("Đồng đội đã cứu: " + teammates, 10, 40);
         }
 
         function gameLoop() {
