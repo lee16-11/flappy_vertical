@@ -53,8 +53,8 @@
             // Game Over condition if bird hits bottom
             if (bird.y >= canvas.height) gameOver();
 
-            // Generate pipes every 90 frames
-            if (frame % 90 === 0) {
+            // Generate pipes every 180 frames (gấp đôi khoảng cách)
+            if (frame % 180 === 0) {  // Đã thay đổi từ 90 thành 180
                 let gapY = Math.random() * (canvas.height - 200) + 100; // Kéo giãn khoảng cách giữa các ống
                 pipes.push({ x: 280, y: gapY, width: 40, height: 100 });
             }
